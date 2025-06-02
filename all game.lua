@@ -140,16 +140,43 @@ end
 
 button.MouseButton1Click:Connect(toggleESP)
 
--- Auto Heal Script (hồi máu liên tục)
+-- Tăng máu tối đa lên 20000 + Hồi máu liên tục
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
--- Hồi máu liên tục
 while true do
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoid = character:FindFirstChildOfClass("Humanoid")
+
     if humanoid then
+        -- Luôn giữ MaxHealth ở mức 20000
+        if humanoid.MaxHealth ~= 20000 then
+            humanoid.MaxHealth = 20000
+        end
+        -- Luôn hồi máu đầy
         humanoid.Health = humanoid.MaxHealth
     end
-    wait(0.01) -- hồi mỗi 0.01 giây
+
+    wait(0.2) -- tốc độ hồi máu (có thể chỉnh nhanh hơn nếu muốn)
+end
+
+-- Tăng damage tất cả vũ khí lên 5000
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+while true do
+    local char = player.Character or player.CharacterAdded:Wait()
+
+    for _, tool in pairs(char:GetChildren()) do
+        if tool:IsA("Tool") then
+            -- Tìm các giá trị số có tên liên quan đến Damage
+            for _, val in pairs(tool:GetDescendants()) do
+                if val:IsA("NumberValue") and string.lower(val.Name):find("damage") then
+                    val.Value = 5000
+                end
+            end
+        end
+    end
+
+    wait(0.5) -- kiểm tra lại mỗi 0.5 giây nếu bạn thay vũ khí
 end
