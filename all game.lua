@@ -157,7 +157,7 @@ while true do
         humanoid.Health = humanoid.MaxHealth
     end
 
-    wait(0.2) -- tốc độ hồi máu (có thể chỉnh nhanh hơn nếu muốn)
+    wait(0.000001) -- tốc độ hồi máu (có thể chỉnh nhanh hơn nếu muốn)
 end
 
 -- Tăng damage tất cả vũ khí lên 5000
