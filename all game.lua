@@ -139,3 +139,17 @@ local function toggleESP()
 end
 
 button.MouseButton1Click:Connect(toggleESP)
+
+-- Auto Heal Script (hồi máu liên tục)
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- Hồi máu liên tục
+while true do
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        humanoid.Health = humanoid.MaxHealth
+    end
+    wait(0.01) -- hồi mỗi 0.01 giây
+end
