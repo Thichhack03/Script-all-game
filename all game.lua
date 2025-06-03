@@ -1,182 +1,138 @@
--- Noclip có GUI nút bật/tắt
-local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local noclip = false
-
--- Tạo GUI
-local screenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-local button = Instance.new("TextButton", screenGui)
-
-button.Size = UDim2.new(0, 100, 0, 50)
-button.Position = UDim2.new(0.05, 0, 0.1, 0)
-button.Text = "Noclip: OFF"
-button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-button.TextColor3 = Color3.new(1, 1, 1)
-button.TextScaled = true
-button.BorderSizePixel = 0
-button.BackgroundTransparency = 0.2
-
--- Bật/tắt khi bấm nút
-button.MouseButton1Click:Connect(function()
-	noclip = not noclip
-	button.Text = noclip and "Noclip: ON" or "Noclip: OFF"
-end)
-
--- Cập nhật CanCollide mỗi frame
-game:GetService("RunService").Stepped:Connect(function()
-	if noclip and character then
-		for _, part in pairs(character:GetDescendants()) do
-			if part:IsA("BasePart") then
-				part.CanCollide = false
-			end
-		end
-	end
-end)
-
--- Fly bằng cách giữ phím Space (Jump)
-local player = game.Players.LocalPlayer
-local char = player.Character or player.CharacterAdded:Wait()
-local hrp = char:WaitForChild("HumanoidRootPart")
-local uis = game:GetService("UserInputService")
-local runService = game:GetService("RunService")
-
-local flying = false
-local flySpeed = 60
-
--- Lắng nghe phím nhảy
-uis.InputBegan:Connect(function(input, gp)
-    if gp then return end
-    if input.KeyCode == Enum.KeyCode.Space then
-        flying = true
-    end
-end)
-
-uis.InputEnded:Connect(function(input, gp)
-    if gp then return end
-    if input.KeyCode == Enum.KeyCode.Space then
-        flying = false
-    end
-end)
-
--- Cập nhật bay
-runService.RenderStepped:Connect(function()
-    if flying then
-        hrp.Velocity = Vector3.new(hrp.Velocity.X, flySpeed, hrp.Velocity.Z)
-    end
-end)
-
--- ESP MM2 đầy đủ: Murder đỏ, Sheriff lam, Innocent xanh lục
+-- 🇻🇳 Hack Menu GUI di chuyển được, có Noclip, Fly, ESP và Auto Anti-Death (kèm tốc độ 20)
 local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
 local RunService = game:GetService("RunService")
-
-local espEnabled = false
-local espFolder = Instance.new("Folder", game.CoreGui)
-espFolder.Name = "MM2FullESP"
-
--- GUI bật/tắt
-local gui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
-local button = Instance.new("TextButton", gui)
-button.Size = UDim2.new(0, 100, 0, 50)
-button.Position = UDim2.new(0.05, 0, 0.3, 0)
-button.Text = "ESP: OFF"
-button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-button.TextColor3 = Color3.new(1, 1, 1)
-button.TextScaled = true
-button.BorderSizePixel = 0
-button.BackgroundTransparency = 0.2
-
--- Tạo box màu cho từng body part
-local function applyESP(player)
-	if player == LocalPlayer then return end
-	local character = player.Character or player.CharacterAdded:Wait()
-	local highlights = Instance.new("Highlight", espFolder)
-	highlights.Name = player.Name .. "_ESP"
-	highlights.Adornee = character
-	highlights.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-	highlights.FillTransparency = 0.5
-	highlights.OutlineTransparency = 1
--- Cập nhật màu theo vai trò
-	spawn(function()
-		while espEnabled and character and highlights.Parent do
-			local roleColor = Color3.fromRGB(0, 255, 0) -- Default: Innocent (xanh lục)
-			for _, tool in pairs(character:GetChildren()) do
-				if tool:IsA("Tool") then
-					if tool.Name == "Knife" then
-						roleColor = Color3.fromRGB(255, 0, 0) -- Murder (đỏ)
-					elseif tool.Name == "Gun" then
-						roleColor = Color3.fromRGB(0, 150, 255) -- Sheriff (xanh lam)
-					end
-				end
-			end
-			highlights.FillColor = roleColor
-			wait(0.5)
-		end
-	end)
-end
-
--- Bật/Tắt ESP
-local function toggleESP()
-	espEnabled = not espEnabled
-	button.Text = espEnabled and "ESP: ON" or "ESP: OFF"
-	
-	if espEnabled then
-		for _, player in pairs(Players:GetPlayers()) do
-			applyESP(player)
-		end
-
-		Players.PlayerAdded:Connect(function(player)
-			player.CharacterAdded:Connect(function()
-				wait(1)
-				if espEnabled then
-					applyESP(player)
-				end
-			end)
-		end)
-	else
-		espFolder:ClearAllChildren()
-	end
-end
-
-button.MouseButton1Click:Connect(toggleESP)
-
--- Tăng máu tối đa lên 20000 + Hồi máu liên tục
-local Players = game:GetService("Players")
 local player = Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+local humanoid = char:WaitForChild("Humanoid")
 
-while true do
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoid = character:FindFirstChildOfClass("Humanoid")
+-- 🛡️ Auto Anti-death + Tốc độ
+humanoid.MaxHealth = 20000
+humanoid.Health = 20000
+humanoid.WalkSpeed = 20
 
+RunService.RenderStepped:Connect(function()
     if humanoid then
-        -- Luôn giữ MaxHealth ở mức 20000
-        if humanoid.MaxHealth ~= 20000 then
-            humanoid.MaxHealth = 20000
-        end
-        -- Luôn hồi máu đầy
-        humanoid.Health = humanoid.MaxHealth
+        humanoid.MaxHealth = 20000
+        humanoid.Health = 20000
+        humanoid.WalkSpeed = 20
     end
+end)
 
-    wait(0.000001) -- tốc độ hồi máu (có thể chỉnh nhanh hơn nếu muốn)
+-- 🖼️ GUI
+local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+gui.ResetOnSpawn = false
+
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 100, 0, 100)
+frame.Position = UDim2.new(0.1, 0, 0.1, 0)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.BackgroundTransparency = 0.2
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.Name = "VNMenu"
+
+local vnFlag = Instance.new("TextButton", frame)
+vnFlag.Size = UDim2.new(1, 0, 1, 0)
+vnFlag.Text = "🇻🇳"
+vnFlag.TextScaled = true
+vnFlag.BackgroundTransparency = 1
+
+-- Menu chính
+local mainMenu = Instance.new("Frame", gui)
+mainMenu.Size = UDim2.new(0, 160, 0, 200)
+mainMenu.Position = UDim2.new(0.1, 110, 0.1, 0)
+mainMenu.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+mainMenu.BorderSizePixel = 0
+mainMenu.Visible = false
+
+-- Bo góc 3mm (khoảng 12px)
+local uicorner = Instance.new("UICorner", frame)
+uicorner.CornerRadius = UDim.new(0, 12)
+
+local uicorner2 = Instance.new("UICorner", mainMenu)
+uicorner2.CornerRadius = UDim.new(0, 12)
+
+-- Toggle menu
+vnFlag.MouseButton1Click:Connect(function()
+    mainMenu.Visible = not mainMenu.Visible
+end)
+
+-- Nút tạo nhanh
+local function createButton(name, order, callback)
+    local btn = Instance.new("TextButton", mainMenu)
+    btn.Size = UDim2.new(1, -20, 0, 40)
+    btn.Position = UDim2.new(0, 10, 0, 10 + (order - 1) * 50)
+    btn.Text = name
+    btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    btn.TextColor3 = Color3.new(1, 1, 1)
+    btn.TextScaled = true
+    btn.BorderSizePixel = 0
+    btn.MouseButton1Click:Connect(callback)
+    local corner = Instance.new("UICorner", btn)
+    corner.CornerRadius = UDim.new(0, 8)
 end
 
--- Tăng damage tất cả vũ khí lên 5000
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
+-- Noclip
+local noclip = false
+createButton("Noclip", 1, function()
+    noclip = not noclip
+end)
 
-while true do
-    local char = player.Character or player.CharacterAdded:Wait()
-
-    for _, tool in pairs(char:GetChildren()) do
-        if tool:IsA("Tool") then
-            -- Tìm các giá trị số có tên liên quan đến Damage
-            for _, val in pairs(tool:GetDescendants()) do
-                if val:IsA("NumberValue") and string.lower(val.Name):find("damage") then
-                    val.Value = 5000
+RunService.Stepped:Connect(function()
+    if noclip then
+        local c = player.Character
+        if c then
+            for _, part in pairs(c:GetDescendants()) do
+                if part:IsA("BasePart") and not part.Anchored then
+                    part.CanCollide = false
                 end
             end
         end
     end
+end)
 
-    wait(0.5) -- kiểm tra lại mỗi 0.5 giây nếu bạn thay vũ khí
-end
+-- Fly
+local flying = false
+local bv
+createButton("Fly", 2, function()
+    flying = not flying
+    if flying then
+        local root = player.Character:FindFirstChild("HumanoidRootPart")
+        bv = Instance.new("BodyVelocity")
+        bv.Velocity = Vector3.new(0, 0, 0)
+        bv.MaxForce = Vector3.new(1, 1, 1) * math.huge
+        bv.Parent = root
+        RunService.RenderStepped:Connect(function()
+            if flying and root then
+                bv.Velocity = root.CFrame.LookVector * 50 + Vector3.new(0, 25, 0)
+            end
+        end)
+    else
+        if bv then bv:Destroy() end
+    end
+end)
+
+-- ESP
+local espOn = false
+createButton("ESP", 3, function()
+    espOn = not espOn
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= player and plr.Character then
+            local head = plr.Character:FindFirstChild("Head")
+            if head and not head:FindFirstChild("ESP") then
+                local box = Instance.new("BoxHandleAdornment")
+                box.Name = "ESP"
+                box.Size = Vector3.new(4, 6, 4)
+                box.Adornee = head
+                box.AlwaysOnTop = true
+                box.ZIndex = 10
+                box.Transparency = 0.5
+                box.Color3 = Color3.fromRGB(0, 255, 0)
+                box.Parent = head
+            elseif head and espOn == false and head:FindFirstChild("ESP") then
+                head:FindFirstChild("ESP"):Destroy()
+            end
+        end
+    end
+end)
