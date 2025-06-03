@@ -8,13 +8,13 @@ local humanoid = char:WaitForChild("Humanoid")
 -- 🛡️ Auto Anti-death + Tốc độ
 humanoid.MaxHealth = 20000
 humanoid.Health = 20000
-humanoid.WalkSpeed = 20
+humanoid.WalkSpeed = 30
 
 RunService.RenderStepped:Connect(function()
     if humanoid then
         humanoid.MaxHealth = 20000
         humanoid.Health = 20000
-        humanoid.WalkSpeed = 20
+        humanoid.WalkSpeed = 30
     end
 end)
 
