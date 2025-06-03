@@ -73,7 +73,7 @@ local function updateESP()
 
     -- Highlight Zombie (phe địch)
     for _, obj in pairs(workspace:GetChildren()) do
-        if obj:IsA("Model") and obj.Name:lower():find("zombie") then
+        if obj:IsA("Model") and obj.Name:lower():find("enemy") then
             createHighlight(obj, Color3.fromRGB(255, 0, 0)) -- Màu đỏ
         end
     end
